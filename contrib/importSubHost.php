@@ -45,9 +45,8 @@ while(($line = fgetcsv($inputFile, 0, ',')) !== FALSE) {
     $values['city'] = $line[3];
     $values['state'] = $line[4];
     $values['zip'] = $line[5];
-    $values['province'] = $email[6];
-    $values['country'] = $email[7];
-
+    $values['province'] = $line[6];
+    $values['country'] = $line[7];
 
     $intern_result = createSubHost($db, $values);
 
@@ -60,7 +59,7 @@ pg_close($db);
 fclose($inputFile);
 
 
-function createSubHost($name){
+function createSubHost($db, $values){
     $query = "SELECT NEXTVAL('intern_sub_host_seq')";
     $id_result = pg_query($query);
 

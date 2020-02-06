@@ -39,9 +39,9 @@ while(($line = fgetcsv($inputFile, 0, ',')) !== FALSE) {
         $line[$key] = pg_escape_string($element);
     }
 
-    $values['host_name'] = $line[0];
+    $values = $line[0];
 
-    $intern_result = createHost($db, $values);
+    $intern_result = createHost($values);
 
     if($intern_result === false){
         echo pg_last_error() . "\n\n";
@@ -52,7 +52,7 @@ pg_close($db);
 fclose($inputFile);
 
 
-function createSubHost($name){
+function createHost($name){
     $query = "SELECT NEXTVAL('intern_host_seq')";
     $id_result = pg_query($query);
 

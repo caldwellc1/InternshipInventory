@@ -39,5 +39,5 @@ deploy:
   overwrite: true
   on:
     repo: AppStateESS/InternshipInventory
-    branch: master
+    branch: siteStop
     tags: true
