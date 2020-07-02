@@ -163,17 +163,19 @@ class CreateInternshipInterface extends React.Component {
         if(form.elements.main_host.value === '-1'){
             thisComponent.refs.hostAgency.setError(true);
             valid = false;
-            errors.push('Main Host');
+            errors.push('Host Name: If you don\'t see the correct host, request it by clicking the plus(+)');
         }else{
             thisComponent.refs.hostAgency.setError(false);
         }
         if(form.elements.sub_host.value === '-1'){
             thisComponent.refs.hostAgency.setError(true);
             valid = false;
-            errors.push('Sub Host');
+            errors.push('Sub Name: If you don\'t see the correct sub, request it by clicking the plus(+)');
         }else{
             thisComponent.refs.hostAgency.setError(false);
         }
+
+        this.setErrorMessages(errors)
 
         return valid;
     }
