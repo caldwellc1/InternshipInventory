@@ -23,23 +23,19 @@ namespace Intern\DataProvider\Major;
 use Intern\AcademicMajor;
 use Intern\AcademicMajorList;
 
-use \SoapFault;
-
 class BannerMajorsProvider extends MajorsProvider {
 
     protected $currentUserName;
 
-    private $client;
+    private $apiKey;
 
     public function __construct($currentUserName)
     {
         $this->currentUserName = $currentUserName;
 
         // Get the WSDL URI from module's settings
-        $wsdlUri = \PHPWS_Settings::get('intern', 'wsdlUri');
-
-        // Create the SOAP instance
-        $this->client = new \SoapClient($wsdlUri, array('WSDL_CACHE_MEMORY'));
+        $this->apiKey = \PHPWS_Settings::get('intern', 'wsdlUri');
+        //$this->client = new \SoapClient($wsdlUri, array('WSDL_CACHE_MEMORY'));
     }
 
     public function getMajors($term): AcademicMajorList
@@ -48,14 +44,14 @@ class BannerMajorsProvider extends MajorsProvider {
             throw new \InvalidArgumentException('Missing term.');
         }
 
-        $params = array('Term'      => $term->getTermCode(),
-                        'UserName'  => $this->currentUserName);
+        $termCode = $term->getTermCode();
+        $params = array('Term' => $termCode, 'UserName' => $this->currentUserName);
 
-        try {
-            $response = $this->client->getMajorInfo($params);
-        } catch (SoapFault $e){
-            throw $e;
-        }
+        $url = 'sawarehouse.ess.appstate.edu/api/intern/majors/' . $termCode . '?username=intern&api_token=' . $this->apiKey;
+        $curl = curl_init();
+        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url));
+        $result = json_decode(curl_exec($curl));
+        curl_close($curl);
 
         $results = $response->GetMajorInfoResult->MajorInfo;
 
