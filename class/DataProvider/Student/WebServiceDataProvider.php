@@ -65,10 +65,13 @@ class WebServiceDataProvider extends StudentDataProvider {
         }
 
         //See if current user has permission to access data
+        if(!\Current_User::isLogged()){
+            throw new \BannerPermissionException('You do not have permission to access student data.');
+        }
 
         $params = array('BannerID' => $studentId, 'UserName' => $this->currentUserName);
 
-        $url = 'sawarehouse.ess.appstate.edu/api/intern/student/' . $studentId . '?username=intern&api_token=' . $this->apiKey;
+        $url = 'https://sawarehouse.ess.appstate.edu/api/intern/student/' . $studentId . '?username=intern&api_token=' . $this->apiKey;
         /*
         $curl = curl_init();
         curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url));
@@ -79,7 +82,7 @@ class WebServiceDataProvider extends StudentDataProvider {
         $curl->setUrl($url);
         $result = json_decode($curl->exec());
         $curl->close();
-var_dump($result);exit;
+
         // Check for an empty response
         if($result === null) {
             throw new \Intern\Exception\StudentNotFoundException("Could not locate student: $studentId");
@@ -119,6 +122,9 @@ var_dump($result);exit;
         }
 
         //See if current user has permission to access data
+        if(!\Current_User::isLogged()){
+            throw new \BannerPermissionException('You do not have permission to access student data.');
+        }
 
         $params = array('BannerID' => $studentId, 'Term' => $term, 'UserName' => $this->currentUserName);
 
@@ -146,6 +152,9 @@ var_dump($result);exit;
         }
 
         //See if current user has permission to access data
+        if(!\Current_User::isLogged()){
+            throw new \BannerPermissionException('You do not have permission to access student data.');
+        }
 
         $params = array('BannerID' => $facultyId, 'UserName' => $this->currentUserName);
 
@@ -166,7 +175,7 @@ var_dump($result);exit;
             $result = $result[0];
         }
 
-        $facultyRes = $this->plugStudentValues($result);
+        $facultyRes = $this->plugfacultyValues($result);
 
         return $facultyRes;
     }
