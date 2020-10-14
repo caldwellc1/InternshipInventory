@@ -72,19 +72,14 @@ class WebServiceDataProvider extends StudentDataProvider {
         $params = array('BannerID' => $studentId, 'UserName' => $this->currentUserName);
 
         $url = 'https://sawarehouse.ess.appstate.edu/api/intern/student/' . $studentId . '?username=intern&api_token=' . $this->apiKey;
-        /*
-        $curl = curl_init();
-        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url));
-        $result = json_decode(curl_exec($curl));
-        curl_close($curl);
-        */
+
         $curl = new Curl();
         $curl->setUrl($url);
         $result = json_decode($curl->exec());
         $curl->close();
 
         // Check for an empty response
-        if($result === null) {
+        if($result === null || (isset($result->message) && $result->message == "No Results Found")) {
             throw new \Intern\Exception\StudentNotFoundException("Could not locate student: $studentId");
         }
 
@@ -94,7 +89,6 @@ class WebServiceDataProvider extends StudentDataProvider {
         if(is_array($result)){
             $result = $result[0];
         }
-
 
         // Log the request
         $this->logRequest('getStudent', 'success', $params);
@@ -128,12 +122,12 @@ class WebServiceDataProvider extends StudentDataProvider {
 
         $params = array('BannerID' => $studentId, 'Term' => $term, 'UserName' => $this->currentUserName);
 
-        $url = 'sawarehouse.ess.appstate.edu/api/intern/student/' . $studentId . '/' . $term . '?username=intern&api_token=' . $this->apiKey;
-        $curl = curl_init();
-        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => $url));
-        $result = json_decode(curl_exec($curl));
-        curl_close($curl);
+        $url = 'https://sawarehouse.ess.appstate.edu/api/intern/student/' . $studentId . '/' . $term . '?username=intern&api_token=' . $this->apiKey;
+
+        $curl = new Curl();
+        $curl->setUrl($url);
+        $result = json_decode($curl->exec());
+        $curl->close();
 
         // Log the request
         $this->logRequest('getCreditHours', 'success', $params);
@@ -158,15 +152,15 @@ class WebServiceDataProvider extends StudentDataProvider {
 
         $params = array('BannerID' => $facultyId, 'UserName' => $this->currentUserName);
 
-        $url = 'sawarehouse.ess.appstate.edu/api/intern/employee/' . $facultyId . '?username=intern&api_token=' . $this->apiKey;
-        $curl = curl_init();
-        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => $url));
-        $result = json_decode(curl_exec($curl));
-        curl_close($curl);
+        $url = 'https://sawarehouse.ess.appstate.edu/api/intern/employee/' . $facultyId . '?username=intern&api_token=' . $this->apiKey;
+
+        $curl = new Curl();
+        $curl->setUrl($url);
+        $result = json_decode($curl->exec());
+        $curl->close();
 
         // Check for an empty response
-        if($result === null) {
+        if($result === null || (isset($result->message) && $result->message == "No Results Found")) {
             throw new \Intern\Exception\StudentNotFoundException("Could not locate faculty member with id: $facultyId");
         }
 
@@ -198,7 +192,7 @@ class WebServiceDataProvider extends StudentDataProvider {
         $student->setFirstName($data->firstName);
         $student->setMiddleName($data->middleName);
         $student->setLastName($data->lastName);
-        //$student->setPreferredName($data->preferred_name);
+        $student->setPreferredName($data->preferredName);
 
         if($data->confidential === 'N') {
             $student->setConfidentialFlag(false);
@@ -249,10 +243,10 @@ class WebServiceDataProvider extends StudentDataProvider {
         // Majors - Can be an array of objects, or just a single object, or not set at all
         if(isset($data->majors) && is_array($data->majors)) {
             foreach($data->majors as $major){
-                $student->addMajor(new AcademicMajor($major->major_code, $major->major_desc, AcademicMajor::LEVEL_UNDERGRAD));
+                $student->addMajor(new AcademicMajor($major->majorCode, $major->majorDescription, AcademicMajor::LEVEL_UNDERGRAD));
             }
         } else if(isset($data->majors) &&  is_object($data->majors)){
-            $student->addMajor(new AcademicMajor($data->majors->major_code, $data->majors->major_desc, AcademicMajor::LEVEL_UNDERGRAD));
+            $student->addMajor(new AcademicMajor($data->majors->majorCode, $data->majors->majorDescription, AcademicMajor::LEVEL_UNDERGRAD));
         }
 
         // GPA - Rounded to 4 decimial places
@@ -275,18 +269,19 @@ class WebServiceDataProvider extends StudentDataProvider {
     * @param stdClass $data
     */
     protected function plugFacultyValues(\stdClass $data) {
+
         $result = array();
-        $result->id = $data->bannerID;
-        $result->username = $data->userName;
-        $result->first_name = $data->firstName;
-        $result->last_name = $data->lastName;
-        $result->phone = $data->phoneNumber;
-        $result->fax = $data->fax;
-        $result->street_address1 = $data->street_address1;
-        $result->street_address2 = $data->street_address2;
-        $result->city = $data->city;
-        $result->state = $data->state;
-        $result->zip = $data->zip;
+        $result['id'] = $data->bannerID;
+        $result['username'] = $data->userName;
+        $result['first_name'] = $data->firstName;
+        $result['last_name'] = $data->lastName;
+        $result['phone'] = $data->phoneNumber;
+        //taking only the first address listed
+        $result['street_address1'] = $data->address[0]->street1;
+        $result['street_address2'] = $data->address[0]->street2;
+        $result['city'] = $data->address[0]->city;
+        $result['state'] = $data->address[0]->state;
+        $result['zip'] = $data->address[0]->zip;
 
         return $result;
     }
