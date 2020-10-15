@@ -45,7 +45,6 @@ class BannerMajorsProvider extends MajorsProvider {
         }
 
         $termCode = $term->getTermCode();
-        $params = array('Term' => $termCode, 'UserName' => $this->currentUserName);
 
         $url = 'https://sawarehouse.ess.appstate.edu/api/intern/majors/' . $termCode . '?username=intern&api_token=' . $this->apiKey;
         $curl = new Curl();

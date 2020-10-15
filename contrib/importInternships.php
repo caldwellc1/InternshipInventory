@@ -45,9 +45,7 @@ $values['campus'] = 'main_campus';
 $values['multi_part'] = 0;
 $values['secondary_part'] = 0;
 $values['domestic'] = 1;
-if($major == 'Nursing'){
-    $values['clinical_practica'] = 1;
-}
+$values['clinical_practica'] = 1;
 
 // Parse CSV input into fields line by line
 while(($line = fgetcsv($inputFile, 0, ',')) !== FALSE) {
@@ -73,10 +71,13 @@ while(($line = fgetcsv($inputFile, 0, ',')) !== FALSE) {
     $values['faculty_id'] = $line[14];
     $values['start_date'] = strtotime($line[15]);
     $values['end_date'] = strtotime($line[16]);
-    $values['course_no'] = $line[17];
-    $values['credits'] = $line[18];
+    $values['course_subj'] = $line[17];
+    $values['course_no'] = $line[18];
+    $values['credits'] = $line[19];
     $values['host_id'] = $line[9];
     $values['host_sub_id'] = $line[10];
+
+    $values['supervisor_id'] = createSupervisor();
 
     $emergency['name'] = $line[6];
     $emergency['relation'] = $line[7];
@@ -107,5 +108,24 @@ function createInternship($db, $values) {
     return $result;
   }else{
       return false;
+  }
+}
+
+function createSupervisor(){
+  $query = "SELECT NEXTVAL('intern_supervisor_seq')";
+  $id_result = pg_query($query);
+
+  // create new supervisor
+  if($id_result){
+    $id_result = pg_fetch_row($id_result);
+    $id = $id_result[0];
+    $sql = "INSERT INTO intern_supervisor (id) VALUES ($id)";
+    $result = pg_query($sql);
+    if($result === false){
+        echo "failed to insert supervisor\n\n";
+        return false;
+    }else{
+        return $id;
+    }
   }
 }
