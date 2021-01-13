@@ -14,7 +14,7 @@
     "react-addons-css-transition-group": "~15.6.0",
     "react-calendar": "^2.19.2",
     "react-dom": "~15.6.1",
-    "react-dropzone": "~3.13.3",
+    "react-dropzone": "8.0.0",
     "react-input-calendar": "^0.5.4"
   },
   "devDependencies": {
@@ -36,7 +36,7 @@
     "react-bootstrap": "^0.31.0",
     "strip-loader": "~0.1.2",
     "style-loader": "~0.18.2",
-    "webpack": "^4.44.2",
+    "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12"
   },
   "scripts": {

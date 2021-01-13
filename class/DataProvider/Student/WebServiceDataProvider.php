@@ -186,28 +186,36 @@ class WebServiceDataProvider extends StudentDataProvider {
         /**********************
         * Basic Demographics *
         **********************/
-        $student->setStudentId($data->bannerID);
-        $student->setUsername($data->userName);
+        if(isset($data->bannerID) && isset($data->userName)){
+            $student->setStudentId($data->bannerID);
+            $student->setUsername($data->userName);
+        } else{
+            exit;
+        }
 
-        $student->setFirstName($data->firstName);
-        $student->setMiddleName($data->middleName);
-        $student->setLastName($data->lastName);
-        $student->setPreferredName($data->preferredName);
+        if(isset($data->firstName) && isset($data->middleName) && isset($data->lastName) && isset($data->preferredName)){
+            $student->setFirstName($data->firstName);
+            $student->setMiddleName($data->middleName);
+            $student->setLastName($data->lastName);
+            $student->setPreferredName($data->preferredName);
+        } else{
+            exit;
+        }
 
-        if($data->confidential === 'N') {
+        if(isset($data->confidential) && $data->confidential === 'N') {
             $student->setConfidentialFlag(false);
         } else {
             $student->setConfidentialFlag(true);
         }
 
         // Person type flags
-        if($data->isStudent == 1){
+        if(isset($data->isStudent) && $data->isStudent == 1){
             $student->setStudentFlag(true);
         } else {
             $student->setStudentFlag(false);
         }
 
-        if($data->isStaff == 1){
+        if(isset($data->isStaff) && $data->isStaff == 1){
             $student->setStaffFlag(true);
         } else {
             $student->setStaffFlag(false);
@@ -218,10 +226,10 @@ class WebServiceDataProvider extends StudentDataProvider {
         *****************/
 
         // Campus
-        if($data->campusDescription == WebServiceDataProvider::MAIN_CAMPUS) {
+        if(isset($data->campusDescription) && $data->campusDescription == WebServiceDataProvider::MAIN_CAMPUS) {
             // If campus is 'Main Campus', then we know it's a main campus student
             $student->setCampus(Student::MAIN_CAMPUS);
-        } else if ($data->campusDescription != '') {
+        } else if (isset($data->campusDescription) && $data->campusDescription != '') {
             // If the campus is set, but is not 'Main Campus', then we know it's some other campus name (e.g. "Catawba EdD EdLead")
             // We're not going to check for every possible campus name; as long as there's *something* there, we'll assume it's distance ed
             $student->setCampus(Student::DISTANCE_ED);
@@ -233,9 +241,9 @@ class WebServiceDataProvider extends StudentDataProvider {
         }
 
         // Check if level exist, if not add it
-        if(LevelFactory::checkLevelExist($data->studentLevel) && $student->getStudentFlag()){
+        if(isset($data->studentLevel) && LevelFactory::checkLevelExist($data->studentLevel) && $student->getStudentFlag()){
             $student->setLevel($data->studentLevel);
-        } else if($student->getStudentFlag()) {
+        } else if(isset($data->studentLevel) && $student->getStudentFlag()) {
             $newLevel = LevelFactory::saveNewCode($data->studentLevel);
             $student->setLevel($newLevel);
         }
@@ -250,17 +258,23 @@ class WebServiceDataProvider extends StudentDataProvider {
         }
 
         // GPA - Rounded to 4 decimial places
-        $student->setGpa(round($data->overallGPA, 4));
+        if(isset($data->overallGPA)){
+            $student->setGpa(round($data->overallGPA, 4));
+        } else{
+           exit;
+        }
 
         // Grad date, if available
         if(isset($data->gradDate) && $data->gradDate != '') {
             $student->setGradDateFromString($data->gradDate);
-        } else if(isset($data->gradYear) && $data->gradYear != '') {
+        } /*else if(isset($data->gradYear) && $data->gradYear != '') {
             $student->setGradDateFromString($data->gradYear);
-        }
+        }*/
 
         // Contact info
-        $student->setPhone($data->phoneNumber);
+        if(isset($data->phoneNumber)){
+            $student->setPhone($data->phoneNumber);
+        }
     }
 
     /**
