@@ -540,7 +540,7 @@ class AllHostList extends React.Component {
         this.viewShowFilter = this.viewShowFilter.bind(this)
         this.updateDisplayData = this.updateDisplayData.bind(this);
     }
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.getData();
         this.getHostConData()
         this.getMainData()

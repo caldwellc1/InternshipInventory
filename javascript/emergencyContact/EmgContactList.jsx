@@ -118,7 +118,7 @@ class ModalForm extends React.Component {
         // Create red asterisk for a required field
         var require = <span style={{color: '#FB0000'}}> *</span>;
         return (
-            <Modal show={this.props.show} onHide={this.handleExit} backdrop='static'>
+            <Modal show={this.props.show} onHide={this.handleExit} backdrop='static' style={{opacity:1}}>
                 <Modal.Header closeButton>
                   <Modal.Title>Emergency Contact</Modal.Title>
                   {this.state.showError ? <Message type="warning" children={this.state.warningMsg}></Message> : null}
@@ -226,7 +226,7 @@ class EmergencyContactList extends React.Component {
         this.openAddModal = this.openAddModal.bind(this);
         this.closeAddModal = this.closeAddModal.bind(this);
     }
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         this.getData();
     }
     closeAddModal() {
