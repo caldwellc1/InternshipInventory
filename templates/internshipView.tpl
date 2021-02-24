@@ -197,6 +197,19 @@
         </div>
         <!-- Host info -->
         <fieldset>
+
+            <div class="col-lg-8 col-lg-offset-3">
+              <div class="checkbox">
+                <label>{REMOTE}&nbsp;{REMOTE_LABEL_TEXT} </label><i class="fa fa-question-circle"></i>
+              </div>
+            </div>
+            <!-- BEGIN remote-state -->
+            <div class="form-group" id="internship_remote_state_label">
+                <label class="col-lg-3 control-label" for="{REMOTE_STATE_ID}">Remote State</label>
+                <div id="internship_remote_state" class="col-lg-6"><p class="form-control-static">{REMOTE_STATE}</p></div>
+            </div>
+            <!-- END remote-state -->
+
             <!-- BEGIN host-state -->
             <div class="form-group">
                 <label class="col-lg-3 control-label" for="{HOST_STATE_ID}">State</label>

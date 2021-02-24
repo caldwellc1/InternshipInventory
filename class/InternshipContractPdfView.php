@@ -77,7 +77,7 @@ class InternshipContractPdfView {
         $f = $this->internship->getFaculty();
         //$subject = $this->internship->getSubject();
 
-        $this->pdf->setSourceFile(PHPWS_SOURCE_DIR . 'mod/intern/pdf/Contract_Updated_202010.pdf');
+        $this->pdf->setSourceFile(PHPWS_SOURCE_DIR . 'mod/intern/pdf/Acknowledgment_Updated_202110.pdf');
         $tplidx = $this->pdf->importPage(1);
         $this->pdf->addPage();
         $this->pdf->useTemplate($tplidx);
@@ -209,6 +209,9 @@ class InternshipContractPdfView {
             $this->pdf->cell(77, 5, $addr2);
         }
 
+        $this->pdf->setXY(137, 174);
+        $this->pdf->cell(77,0, $this->internship->getRemoteState());
+
         /**
          * Supervisor info.
          */
@@ -252,13 +255,13 @@ class InternshipContractPdfView {
             $this->pdf->cell(78, 5, $superLine2);
         }
 
-        $this->pdf->setXY(125, 159);
+        $this->pdf->setXY(125, 166);
         $this->pdf->cell(72, 5, $s->getSupervisorEmail());
 
-        $this->pdf->setXY(125, 154);
+        $this->pdf->setXY(125, 160);
         $this->pdf->cell(33, 5, $s->getSupervisorPhoneNumber());
 
-        $this->pdf->setXY(166, 154);
+        $this->pdf->setXY(166, 160);
         $this->pdf->cell(40, 5, $s->getSupervisorFaxNumber());
 
 
@@ -273,13 +276,13 @@ class InternshipContractPdfView {
         if(sizeof($this->emergencyContacts) > 0){
             $firstContact = $this->emergencyContacts[0];
 
-            $this->pdf->setXY(59, 271);
+            $this->pdf->setXY(59, 273);
             $this->pdf->cell(52, 0, $firstContact->getName());
 
-            $this->pdf->setXY(134, 271);
+            $this->pdf->setXY(134, 273);
             $this->pdf->cell(52, 0, $firstContact->getRelation());
 
-            $this->pdf->setXY(172, 271);
+            $this->pdf->setXY(172, 273);
             $this->pdf->cell(52, 0, $firstContact->getPhone());
         }
     }
