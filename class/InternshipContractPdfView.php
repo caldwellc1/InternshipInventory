@@ -170,8 +170,6 @@ class InternshipContractPdfView {
                 $this->pdf->cell(81, 5, $addrFac2);
             }
 
-
-
             $this->pdf->setXY(29, 141);
             $this->pdf->cell(77, 5, $f->getPhone());
 
@@ -237,21 +235,14 @@ class InternshipContractPdfView {
             $this->pdf->setXY(113, 149);
             $this->pdf->cell(78, 5, $super_address);
         }else{
-            // Too long, need to use two lines
-            $host_info_len = strlen($superName) + strlen($supervisorTitle);
-            $newX = 113 + ($host_info_len * 2);
-            $endX = (203 - $newX) / 1.5;
-
-            //$superLine1 = substr($super_address, 0, $endX); // get first 55 chars
-            //$superLine2 = substr($super_address, $endX); // get the rest, hope it fits
-
-            $addrSup = wordwrap($host_address, $endX);
+            // Too long, need to use two lines, breaks string at whole word around 55 chars
+            $addrSup = wordwrap($super_address, 55);
             $superLine1 = substr($addrSup, 0, strpos($addrSup, "\n"));
             $superLine2 = substr($addrSup, strpos($addrSup, "\n"));
 
-            $this->pdf->setXY($newX, 144);
-            $this->pdf->cell(78, 5, $superLine1);
             $this->pdf->setXY(113, 149);
+            $this->pdf->cell(78, 5, $superLine1);
+            $this->pdf->setXY(113, 155);
             $this->pdf->cell(78, 5, $superLine2);
         }
 
