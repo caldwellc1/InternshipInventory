@@ -306,7 +306,7 @@ class AffiliateList extends React.Component {
                 }
             }
             else if (filter ==='auto_renew') {
-                if (item.auto_renew && expiration > 0) {
+                if (item.auto_renew) {
                     filtered.push(item);
                 }
             }

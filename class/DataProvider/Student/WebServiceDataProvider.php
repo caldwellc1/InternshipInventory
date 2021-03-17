@@ -45,8 +45,7 @@ class WebServiceDataProvider extends StudentDataProvider {
     /**
     * @param string $currentUserName - Username of the user currently logged in. Will be sent to web service
     */
-    public function __construct($currentUserName)
-    {
+    public function __construct($currentUserName){
         $this->currentUserName = $currentUserName;
 
         // Get the WSDL URI from module's settings
@@ -58,8 +57,7 @@ class WebServiceDataProvider extends StudentDataProvider {
      * Returns a Student object with hard-coded data
      * @return \Intern\Student
      */
-    public function getStudent($studentId)
-    {
+    public function getStudent($studentId){
         if($studentId === null || $studentId == ''){
             throw new \InvalidArgumentException('Missing student ID.');
         }
@@ -93,20 +91,22 @@ class WebServiceDataProvider extends StudentDataProvider {
         // Log the request
         $this->logRequest('getStudent', 'success', $params);
 
-        // Create the Student object and plugin the values
-        $student = new Student();
-        $this->plugStudentValues($student, $result);
-
+        // Create the Student object and plugin the values, Full check for missing data
+        try {
+            $student = new Student();
+            $this->plugStudentValues($student, $result);
+        }
+        catch(\Exception $e) {
+            throw new \Intern\Exception\StudentNotFoundException("Missing student data: $studentId");
+        }
         return $student;
     }
 
-    protected function sendRequest(Array $params)
-    {
+    protected function sendRequest(Array $params){
         return $this->client->GetInternInfo($params);
     }
 
-    public function getCreditHours(string $studentId, string $term)
-    {
+    public function getCreditHours(string $studentId, string $term){
         if($studentId === null || $studentId == ''){
             throw new \InvalidArgumentException('Missing student ID.');
         }
@@ -139,8 +139,7 @@ class WebServiceDataProvider extends StudentDataProvider {
         }
     }
 
-    public function getFacultyMember($facultyId)
-    {
+    public function getFacultyMember($facultyId){
         if($facultyId === null || $facultyId == ''){
             throw new \InvalidArgumentException('Missing student ID.');
         }
@@ -181,25 +180,19 @@ class WebServiceDataProvider extends StudentDataProvider {
     * @param Student $student
     * @param stdClass $data
     */
-    protected function plugStudentValues(&$student, \stdClass $data)
-    {
+    protected function plugStudentValues(&$student, \stdClass $data){
         /**********************
         * Basic Demographics *
         **********************/
-        if(isset($data->bannerID) && isset($data->userName)){
-            $student->setStudentId($data->bannerID);
-            $student->setUsername($data->userName);
-        } else{
-            exit;
-        }
-
-        if(isset($data->firstName) && isset($data->middleName) && isset($data->lastName) && isset($data->preferredName)){
-            $student->setFirstName($data->firstName);
+        $student->setStudentId($data->bannerID);
+        $student->setUsername($data->userName);
+        $student->setFirstName($data->firstName);
+        if(isset($data->middleName)){
             $student->setMiddleName($data->middleName);
-            $student->setLastName($data->lastName);
+        }
+        $student->setLastName($data->lastName);
+        if(isset($data->preferredName)){
             $student->setPreferredName($data->preferredName);
-        } else{
-            exit;
         }
 
         if(isset($data->confidential) && $data->confidential === 'N') {
@@ -258,11 +251,7 @@ class WebServiceDataProvider extends StudentDataProvider {
         }
 
         // GPA - Rounded to 4 decimial places
-        if(isset($data->overallGPA)){
-            $student->setGpa(round($data->overallGPA, 4));
-        } else{
-           exit;
-        }
+        $student->setGpa(round($data->overallGPA, 4));
 
         // Grad date, if available
         if(isset($data->gradDate) && $data->gradDate != '') {
@@ -303,8 +292,7 @@ class WebServiceDataProvider extends StudentDataProvider {
     /**
     * Logs this request to PHPWS' curlapi.log file
     */
-    private function logRequest($functionName, $result, Array $params)
-    {
+    private function logRequest($functionName, $result, Array $params) {
         $args = implode(', ', $params);
         $msg = "$functionName($args) result: $result";
         \PHPWS_Core::log($msg, 'curlapi.log', 'CURLAPI');

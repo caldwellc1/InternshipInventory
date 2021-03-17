@@ -105,9 +105,9 @@ class CreateInternshipInterface extends React.Component {
         var errors = [];
 
         // Check the student Component
-        if(form.elements.studentId.value === '' || !thisComponent.refs.studentSearch.studentFound()){
+        if(form.elements.studentId.value === '' || !thisComponent.refs.studentSearch.studentFound() || !form.elements.studentId.value.match(/^([0-9]){9}$/)){
             thisComponent.refs.studentSearch.setError(true);
-            errors.push('Student ID');
+            errors.push('Student ID (Box must be changed to banner if not automatically done when student is selected.)');
             valid = false;
         }else{
             thisComponent.refs.studentSearch.setError(false);
